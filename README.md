@@ -24,28 +24,33 @@ These coding challenges are all about having fun, learning a new programming lan
 - Winners will be announced by Nov 21, 209 3.00 PM
 
 ## Challenges
+The challenges are based on the [Hipster Shop: Cloud-Native Microservices Demo Application](https://github.com/GoogleCloudPlatform/microservices-demo) developed by Google Cloud. It is a web-based e-commerce application with 10 microservices written in different programming languages that talk to each other over gRPC. You can refer to the original [README.md](https://github.com/GoogleCloudPlatform/microservices-demo/blob/master/README.md) file to learn more about this application. Here is a brief overview of the service architecture.
 
-The challenges are based on the “[Hipster Shop: Cloud-Native Microservices Demo Application](https://github.com/GoogleCloudPlatform/microservices-demo)” developed by Google Cloud. It is a web-based e-commerce application with 10 microservices written in different programming languages. You can refer to the original [README.md](https://github.com/GoogleCloudPlatform/microservices-demo/blob/master/README.md) file to learn more about this application.
+[![Architecture of microservices](./docs/img/architecture-diagram.png)](./docs/img/architecture-diagram.png)
 
-In this hackathon your task is to implement following microservices in Ballerina. We expect you to look at the original source code and rewrite the same logic in Ballerina. You can refer to the [Getting started](#Getting-started) section for more details on how to complete these challenges.
+In this hackathon, your task is to implement the following microservices in Ballerina. We calculated the level of difficulty based on the Ballerina knowledge required as well as the LOC. 
 
-- The “**[currencyservice](./src/currencyservice)**” microservice
-    - Language: Node.js
-    - Description: Converts one money amount to another currency. Uses real values fetched from European Central Bank. It's the highest QPS service.
+| Service                                              | Level of Difficulty |Language      | Description                                                                                                                       |
+| ---------------------------------------------------- | ------------------- |------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| [currencyservice](./src/currencyservice)             | Easy                | Node.js       | Converts one money amount to another currency. Uses real values fetched from European Central Bank. It's the highest QPS service. |
+| [productcatalogservice](./src/productcatalogservice) | Easy                | Go            | Provides the list of products from a JSON file and ability to search products and get individual products.|
+| [adservice](./src/adservice)                         | Easy                | Java          | Provides text ads based on given context words.|
+| [cartservice](./src/cartservice)                     | Eedium              | C#            | Stores the items in the user's cart and retrieves it.|
+| [checkoutservice](./src/checkoutservice)             | Hard                | C#            | Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.|
 
-- The “**[adservice](./src/adservice)**” microservice 
-    - Language: Java
-    - Description: Provides text ads based on given context words.
-- The “**[productcatalogservice](./src/productcatalogservice)**” microservice
-    - Language: Go
-    - Description: Provides the list of products from a JSON file and ability to search products and get individual products.
-- The “**[cartservice](./src/cartservice)**” microservice
-    - Language: C#
-    - Description: Stores the items in the user's shopping cart in Redis and retrieves it.
+### Implementation Instructions
+We expect you to go through the instructions for each service before implementing the logic. You can refer to the original source code for more information.
 
-- The “**[checkoutservice](./src/checkoutservice)**” microservice
-    - Language: Go
-    - Description: Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.
+| Service                                              | Instructions                                                                                                                       |
+| ---------------------------------------------------- | --------------------------------------------------------------------------- |
+| [currencyservice](./src/currencyservice)             | <ol><li>Read the conversion data in /src/currencyservice/data/currency_conversion.json (you can copy it to your ballerina project)</li><li>Then implement the logic to output the correct conversion based on the ratios in JSON data.</li><li>The `GetSupportedCurrencies` and `Convert` resources have to be implemented.</li></ol> |
+| [productcatalogservice](./src/productcatalogservice) | <ol><li>Read the product.json using IO operations. Convert the JSON[] in to Product record[].</li><li>Then implement  ‘ListProducts’, ‘GetProduct’, and ‘SearchProducts’ resources.</li></ol> |
+| [adservice](./src/adservice)                         | <ol><li>Implement service to generate ads based on given context keys.</li></ol> |
+| [cartservice](./src/cartservice)                     | <ol><li>Implement the logic to update the user’s cart (add/remove) items or retrieve the cart.</li><li> Instead of the Redis store in the original implementation, you can use a `map<Cart>` as an in-memory store for the Ballerina implementation.</li></ol> |
+| [checkoutservice](./src/checkoutservice)             | <ol><li>This microservice is a service chaining example where you need to integrate with services, including payment, email, shipping, currency, cart, and product catalog services.</ol> |
+                                                                                                                
+Read the product.json using IO operations. Convert the JSON[] in to Product record[].
+Then implement  ‘ListProducts’, ‘GetProduct’, and ‘SearchProducts’ resources.
 
 ## Prizes
 There are 5 challenges in this Ballerina hackathon. You need to complete all 5 challenges to be eligible for a prize.
@@ -64,46 +69,60 @@ There are 5 challenges in this Ballerina hackathon. You need to complete all 5 c
 
 
 ## Getting started
+### Prerequisites
+#### Ballerina 
+- Visit https://ballerina.io/downloads/ to install the latest ballerina version 1.0.4 as well as the VSCode or IntelliJ IDEA plugins. 
 
-Start with a GitHub Repository in your account. You can clone this repository to your workstation and then push it to your repository. If you directly fork this repository, you won't be able to make it private. It is up to you to keep this repo as a private repo during the hackathon. 
+#### Docker and Kubernetes 
+- Use Docker for Mac to install on Mac.
+- Use Docker for Windows to install on Windows.
+- Use Minikube to install on Linux.
 
-## GitHub repository
+### GitHub repository
+1. Create a private GitHub repository in your account. Do not fork this repository if you want to keep your code private during the hackathon. An example repository name would be `ballerina-hackathon-kubecon-na-19`
+1. Run following commands to merge microservices-demo content to your newly created repository.
+    ```bash
+    $ git clone https://github.com/<gitbubusername>/ballerina-hackathon-kubecon-na-19
 
-1.  Create a private GitHub repository in your personal account. Do not folk this repository if you want to keep your code private during the hackathon. An example repository name would be "ballerina-hackathon-kubecon-na-19"
+    $ cd ballerina-hackathon-kubecon-na-19
 
-2. Clone this repository to your machine and then push it your private Git repository.
+    $ git remote add upstream https://github.com/ballerina-guides/microservices-demo.git
 
-## Installation
+    $ git pull upstream master
 
-Make sure that you've Docker and Kubernetes installed locally. We recommend you to use the pre-built container images of all the microservices that are available publicly, instead of building yourself. 
+    $ git push origin master
+    ```
 
-### Building and running this application
+### Running Hipster Shop Application (unchanged)
+1. Run the following command to deploy the app. This will take ~10 mins to complete. You will use pre-built container images that are available publicly, instead of building them yourself, which takes a long time
+    ```sh
+    kubectl apply -f ./release/kubernetes-manifests.yaml
+    ```
+2. Run `kubectl get pods` to see pods are in a Ready state. 
+3. If all the pods are running, `kubectl get service/frontend-external`
+4. Find the IP address of your application, then visit the application on your browser to confirm installation. (http://localhost:80 )
+    ```sh
+    kubectl get service/frontend-external
+    ```
+    Note: If you are on minikube, get the hostname by executing `minikube ip`. Example: <MINIKUBE_IP>:<FRONTEND_EXTERNAL_PORT>
 
-**[TODO]**
+    You have successfully installed the default application by now. 
+5. Run `kubectl delete -f ./release/kubernetes-manifests.yaml` to delete what's deployed.
 
-For each microservice you write in Ballerina, you can follow the following steps.
+### Running Hipster Shop Application with Ballerina services
+We’ve already implemented the recommendation service in Ballerina, and the source code is available in `src/recommendatationservice_ballerina` directory.
+1. Run the `scripts/setup.sh` script.
 
-- Create a Ballerina project in the src/ directory.
+2. Check pods with `kubectl get pods`
 
-    `ballerina new recommendationservice_ballerina`
+3. Access the web UI (http://localhost:80 or `http://<minikube_ip>:<port>`)
 
-- Move into the directory created for the project
+4. Run the `scripts/shutdown.sh` script to delete what's deployed.
 
-    `cd recommendationservice_ballerina`
+### Let's start with Currency Service
+Now that you’ve successfully installed and deployed the Hipster Shop application with one microservice written in Ballerina, it is time to start working on the challenges. Let’s start with writing the [currencyservice](./src/currencyservice) in Ballerina. You can repeat the following set of instructions for all five services.  
 
-- Add a new Ballerina module
-
-    `ballerina add recommendationservice`
-
-- Remove the default content added. Generate the client/service stub and optionally a service/client template using 
-the relevant .proto file
-
-    `ballerina grpc --input <project_root>/pb/services/recommendationservice.proto --output src/recommendationservice --mode service`
-
-    Ensure you specify the output path to point to the module created. 
-
-- Once you’ve completed a service, update the setup.sh file, to use the Ballerina implementation of your service. You 
-can replace the current command for the particular service with the ballerina commands for them instead.
+[TODO]
 
 ## Submission guidelines
 
